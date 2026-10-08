@@ -7,6 +7,8 @@ import pathlib
 import re
 import tempfile
 import zipfile
+import ssl
+import urllib.request
 from urllib.parse import urlsplit
 import httpx
 from cryptography.hazmat.primitives import serialization, hashes
@@ -17,6 +19,22 @@ from storage import protect_directory
 DEFAULT_UPDATE_SOURCE = "https://github.com/bufan090324/Evara/releases/latest/download/update.json"
 
 MAX_PACKAGE = 150 * 1024 * 1024
+
+
+def update_client(url):
+    """Public downloads follow the user's OS proxy and trust store, with TLS verified.
+
+    This client never carries phone credentials or AI authorization headers.
+    """
+    hostname = urlsplit(url).hostname or ""
+    proxies = urllib.request.getproxies()
+    proxy = None if urllib.request.proxy_bypass(hostname) else proxies.get("https")
+    if proxy:
+        parsed = urlsplit(proxy)
+        if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+            raise ValueError("系统 HTTPS 代理格式不支持，请检查 Windows 代理设置")
+    return httpx.AsyncClient(proxy=proxy, verify=ssl.create_default_context(), trust_env=False,
+                             follow_redirects=False, timeout=httpx.Timeout(30, connect=15))
 
 
 def https_url(value):
@@ -138,7 +156,7 @@ class UpdateManager:
         url = self.source()
         if not url: raise ValueError("尚未配置更新源；请输入已发布的签名更新清单 HTTPS 地址")
         self.candidate = None
-        async with httpx.AsyncClient(trust_env=False, follow_redirects=False, timeout=15) as client:
+        async with update_client(url) as client:
             async with asyncio.timeout(45):
                 response = await stream_url(client, url, 65536)
                 try:
@@ -162,7 +180,7 @@ class UpdateManager:
         temporary = pathlib.Path(name)
         try:
             digest = hashlib.sha256(); count = 0
-            async with httpx.AsyncClient(trust_env=False, follow_redirects=False, timeout=15) as client:
+            async with update_client(item["url"]) as client:
                 async with asyncio.timeout(600):
                     response = await stream_url(client, item["url"], item["size"])
                     try:

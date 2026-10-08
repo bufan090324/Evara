@@ -4,7 +4,7 @@
 
 ## 构建与自动化
 
-- Windows Python/Qt **82 项测试通过，0 失败、0 跳过**：既有 WSS 鉴权、串行队列、超时、取消、连接代次、睡眠证据展示与导出、Responses/DeepSeek 请求，以及签名更新清单、篡改/未签名拒绝、HTTPS 跳转限制、文件大小/哈希、ZIP 路径穿越防护、有效解压、取消清理及更新启动授权。
+- Windows Python/Qt **84 项测试通过，0 失败、0 跳过**：既有 WSS 鉴权、串行队列、超时、取消、连接代次、睡眠证据展示与导出、Responses/DeepSeek 请求，以及签名更新清单、篡改/未签名拒绝、HTTPS 跳转限制、文件大小/哈希、ZIP 路径穿越防护、有效解压、取消清理、系统代理/证书校验及更新启动授权。
 - Android 实际编译 debug APK，**157 项 JVM 测试通过**：新增更新清单 RSA/SHA-256 签名、篡改、错误产品、非法字段、非 HTTPS、凭证 URL 和大小限制测试。Lint **0 错误、35 警告**；包含既有警告和新增安装入口等警告，未声称所有警告已消除。
 - APK v2 签名验证通过；包 cn.personal.phonebridge，versionName 1.0.0，versionCode 19，minSdk 30 / targetSdk 35；签名证书 SHA-256 `2d3414bafc167f73011cf65d636819e7b73495cf202a371ed203075fd59d0aae`，与旧版一致。
 - Windows PyInstaller 便携版实际构建，保留内置 Python/Qt/HTTPX。只保留 Windows 系统 PATH 的启动探针退出码 0，版本 1.0.0、6 个页面、后台线程、ACL、DPAPI、二维码生成通过，云端与图片授权默认关闭。

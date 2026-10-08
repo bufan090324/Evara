@@ -20,6 +20,7 @@ APK 下载文件保存在应用私有缓存，下一次下载替换缓存；取�
 
 ## 校验和发布
 
+- Windows 更新下载遵循当前系统 HTTP/HTTPS 代理及系统证书信任，支持代理排除规则；Android 使用系统网络配置。AI 请求仍使用原来的独立客户端，更新请求不携带 AI 密钥。SOCKS 代理地址暂不支持；可在 Windows 配置标准 HTTP/HTTPS 代理。
 - 使用标准 HTTPS/TLS 证书校验；GitHub 资产的重定向只允许 HTTPS，最多 6 跳，不向更新请求附加 API Key、配对凭证或健康内容。
 - update.json 包含 Base64 编码的 payload 和 RSA/SHA-256 signature。payload 指定 schema=1、product=Evara 以及两平台的版本、下载 URL、文件字节数、SHA-256 和更新说明。
 - 更新清单最多 64 KiB，包文件最多 150 MiB；Windows ZIP 最大解压 400 MiB，最多 10000 项，拒绝绝对路径、路径穿越、符号链接与重复路径，要求 Evara/Evara.exe。ZIP 哈希校验在解压前完成。

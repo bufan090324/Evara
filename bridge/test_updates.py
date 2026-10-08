@@ -11,7 +11,7 @@ import httpx
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from unittest.mock import patch
-from updates import parse_manifest, https_url, version, extract_package, stream_url, UpdateManager
+from updates import parse_manifest, https_url, version, extract_package, stream_url, UpdateManager, update_client
 
 
 class UpdateTests(unittest.TestCase):
@@ -60,6 +60,18 @@ class UpdateTests(unittest.TestCase):
 
 
 class UpdateNetworkTests(unittest.IsolatedAsyncioTestCase):
+    async def test_system_proxy_and_tls_context_used_for_public_updates(self):
+        with patch("updates.urllib.request.getproxies",return_value={"https":"http://127.0.0.1:7890"}),patch("updates.urllib.request.proxy_bypass",return_value=False),patch("updates.httpx.AsyncClient") as factory:
+            update_client("https://github.com/example/update.json")
+            config=factory.call_args.kwargs
+            self.assertEqual("http://127.0.0.1:7890",config["proxy"])
+            self.assertFalse(config["trust_env"]);self.assertTrue(config["verify"].check_hostname)
+            self.assertNotIn("headers",config)
+    async def test_proxy_bypass_and_unsupported_proxy(self):
+        with patch("updates.urllib.request.getproxies",return_value={"https":"http://127.0.0.1:7890"}),patch("updates.urllib.request.proxy_bypass",return_value=True),patch("updates.httpx.AsyncClient") as factory:
+            update_client("https://local.example/update.json");self.assertIsNone(factory.call_args.kwargs["proxy"])
+        with patch("updates.urllib.request.getproxies",return_value={"https":"socks5://127.0.0.1:7890"}),patch("updates.urllib.request.proxy_bypass",return_value=False):
+            with self.assertRaises(ValueError):update_client("https://example.invalid/update.json")
     async def test_verified_download_extracts_complete_portable_directory(self):
         stream=io.BytesIO()
         with zipfile.ZipFile(stream,"w") as archive:
