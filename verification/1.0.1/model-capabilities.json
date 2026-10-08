@@ -1,0 +1,39 @@
+{
+  "message": "四项独立检测已结束；未确认项不能视为不支持。",
+  "capabilities": {
+    "text": {
+      "status": "verified",
+      "message": "本次实际测试通过",
+      "at": "2026-10-08T10:52:44.515314+00:00",
+      "evidence": "random_content_matched",
+      "challenge_sha256": "86ddff66719e47a21fa47e2a278ff254c7b7d4fb8ddf8f26fd22b1dd35b533a7",
+      "request_id": null
+    },
+    "tools": {
+      "status": "verified",
+      "message": "本次实际测试通过",
+      "at": "2026-10-08T10:52:45.552949+00:00",
+      "evidence": "valid_function_call",
+      "challenge_sha256": null,
+      "request_id": null
+    },
+    "image": {
+      "status": "verified",
+      "message": "本次实际测试通过",
+      "at": "2026-10-08T10:52:46.244825+00:00",
+      "evidence": "random_content_matched",
+      "challenge_sha256": "da72feb977c28b39f79cc0e98d67cd81e92e86fd1ee54bbee6bbf2e6e9318c4f",
+      "request_id": null
+    },
+    "stream": {
+      "status": "verified",
+      "message": "本次实际测试通过",
+      "at": "2026-10-08T10:52:46.801549+00:00",
+      "evidence": "random_content_matched",
+      "challenge_sha256": "0387f96b6ca3a181fb6cb798370b520b485df3fcd6cb09183befd5ed2224d639",
+      "request_id": null
+    }
+  },
+  "model": "deepseek-flash",
+  "endpoint": "https://api.deepseek.com"
+}

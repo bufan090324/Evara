@@ -23,7 +23,7 @@ from worker import NetworkWorker
 from ai_ui import AIPage
 from update_ui import UpdatePage
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 
 class ImageView(QLabel):

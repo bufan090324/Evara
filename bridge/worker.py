@@ -89,8 +89,8 @@ class NetworkWorker(QThread):
                     if self.update_task and not self.update_task.done(): self.update_task.cancel()
                     self.result.emit(identifier, {}); return
                 if self.update_task and not self.update_task.done(): raise ValueError("正在检查或下载更新，请先取消")
-                if action == "update_load": data = {"source": self.updates.source()}
-                elif action == "update_save": data = self.updates.save_source(params["url"])
+                if action == "update_load": data = {"source": self.updates.source(), "direct": self.updates.direct()}
+                elif action == "update_save": data = self.updates.save_source(params["url"], params.get("direct", False))
                 else:
                     self.update_task = asyncio.current_task()
                     try:
@@ -174,7 +174,8 @@ class NetworkWorker(QThread):
         except asyncio.CancelledError:
             self.failure.emit(identifier, "请求已取消或连接已停止，不会重发")
         except TimeoutError:
-            self.failure.emit(identifier, "TIMEOUT：未收到及时响应；动作可能已执行，请核对手机，勿盲目重试")
+            message = "UPDATE_TIMEOUT：更新下载超时；未启动新版，临时文件已清理，请检查网络后主动重试" if action.startswith("update_") else "TIMEOUT：未收到及时响应；动作可能已执行，请核对手机，勿盲目重试"
+            self.failure.emit(identifier, message)
         except OSError as error:
             code = getattr(error, "winerror", None) or getattr(error, "errno", None)
             if code in {10048, 98}:

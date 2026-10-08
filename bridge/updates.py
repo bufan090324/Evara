@@ -21,14 +21,14 @@ DEFAULT_UPDATE_SOURCE = "https://github.com/bufan090324/Evara/releases/latest/do
 MAX_PACKAGE = 150 * 1024 * 1024
 
 
-def update_client(url):
+def update_client(url, direct=False):
     """Public downloads follow the user's OS proxy and trust store, with TLS verified.
 
     This client never carries phone credentials or AI authorization headers.
     """
     hostname = urlsplit(url).hostname or ""
-    proxies = urllib.request.getproxies()
-    proxy = None if urllib.request.proxy_bypass(hostname) else proxies.get("https")
+    proxies = {} if direct else urllib.request.getproxies()
+    proxy = None if direct or urllib.request.proxy_bypass(hostname) else proxies.get("https")
     if proxy:
         parsed = urlsplit(proxy)
         if parsed.scheme not in {"http", "https"} or not parsed.hostname:
@@ -144,19 +144,28 @@ class UpdateManager:
         try: return https_url(json.loads(self.settings_path.read_text())["url"])
         except Exception: raise ValueError("更新源设置损坏，请重新保存 HTTPS 地址") from None
 
-    def save_source(self, url):
+    def direct(self):
+        if not self.settings_path.exists(): return False
+        try:
+            value = json.loads(self.settings_path.read_text(encoding="utf-8")).get("direct", False)
+            if not isinstance(value, bool): raise ValueError()
+            return value
+        except Exception: raise ValueError("更新网络设置损坏，请重新保存") from None
+
+    def save_source(self, url, direct=False):
         https_url(url)
+        if not isinstance(direct, bool): raise ValueError("更新直连设置必须为布尔值")
         protect_directory(self.settings_path.parent)
         if self.settings_path.is_symlink(): raise ValueError("更新设置不能是符号链接")
-        self.settings_path.write_text(json.dumps({"url": url}), encoding="utf-8")
+        self.settings_path.write_text(json.dumps({"url": url, "direct": direct}), encoding="utf-8")
         self.candidate = None
-        return {"source": url}
+        return {"source": url, "direct": direct}
 
     async def check(self, current):
         url = self.source()
         if not url: raise ValueError("尚未配置更新源；请输入已发布的签名更新清单 HTTPS 地址")
         self.candidate = None
-        async with update_client(url) as client:
+        async with (update_client(url, direct=True) if self.direct() else update_client(url)) as client:
             async with asyncio.timeout(45):
                 response = await stream_url(client, url, 65536)
                 try:
@@ -180,8 +189,8 @@ class UpdateManager:
         temporary = pathlib.Path(name)
         try:
             digest = hashlib.sha256(); count = 0
-            async with update_client(item["url"]) as client:
-                async with asyncio.timeout(600):
+            async with (update_client(item["url"], direct=True) if self.direct() else update_client(item["url"])) as client:
+                async with asyncio.timeout(1800):
                     response = await stream_url(client, item["url"], item["size"])
                     try:
                         with temporary.open("wb") as target:

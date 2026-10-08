@@ -3,7 +3,7 @@ android {
     namespace = "cn.personal.phonebridge"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
-    defaultConfig { applicationId = "cn.personal.phonebridge"; minSdk = 30; targetSdk = 35; versionCode = 20; versionName = "1.0.1"; testInstrumentationRunner = "cn.personal.phonebridge.UpgradeProbe" }
+    defaultConfig { applicationId = "cn.personal.phonebridge"; minSdk = 30; targetSdk = 35; versionCode = 21; versionName = "1.0.2"; testInstrumentationRunner = "cn.personal.phonebridge.UpgradeProbe" }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
     testOptions { unitTests.isReturnDefaultValues = true }

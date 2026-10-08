@@ -1,0 +1,8 @@
+{
+  "from": "1.0.0",
+  "to": "1.0.1",
+  "pairing_tls_files_unchanged": true,
+  "dpapi_ai_settings_unchanged": true,
+  "saved_key_decryptable": true,
+  "native_exe_startup": true
+}

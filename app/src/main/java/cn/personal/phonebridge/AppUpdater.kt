@@ -22,11 +22,14 @@ internal class AppUpdater(private val context:Context) {
     fun source()=context.getSharedPreferences("updates",Context.MODE_PRIVATE).getString("source",DEFAULT_UPDATE_SOURCE) ?: DEFAULT_UPDATE_SOURCE
     fun save(url:String) {UpdateManifest.https(url);context.getSharedPreferences("updates",Context.MODE_PRIVATE).edit().putString("source",url).apply();candidate=null}
     fun cancel(){call?.cancel()}
-    private fun response(initial:String,limit:Long):Response {
+    private fun response(initial:String,limit:Long,seconds:Long=45):Response {
         var url=initial
+        val deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(seconds)
         repeat(6) {
             UpdateManifest.https(url)
-            val next=client.newCall(Request.Builder().url(url).get().build());call=next
+            val remaining=deadline-System.nanoTime()
+            require(remaining>0){"更新请求超时"}
+            val next=client.newBuilder().callTimeout(remaining,TimeUnit.NANOSECONDS).build().newCall(Request.Builder().url(url).get().build());call=next
             val response=next.execute()
             if(response.code in listOf(301,302,303,307,308)) {
                 val resolved=response.header("Location")?.let {response.request.url.resolve(it)}?.toString()
@@ -56,7 +59,7 @@ internal class AppUpdater(private val context:Context) {
         partial.delete();complete.delete()
         try {
             var total=0L;val digest=MessageDigest.getInstance("SHA-256")
-            response(item.url,item.size).use {response ->
+            response(item.url,item.size,1800).use {response ->
                 requireNotNull(response.body).byteStream().use {input -> partial.outputStream().use {output ->
                     val buffer=ByteArray(65536)
                     while(true) {

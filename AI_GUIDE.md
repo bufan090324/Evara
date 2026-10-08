@@ -1,6 +1,6 @@
 # Evara AI 对话使用与构建
 
-本版 Windows 1.0.1 / Android 1.0.1。项目原名“手机桥”，新程序为 Evara.exe。Android 包名仍为 cn.personal.phonebridge，电脑资料仍在 %LOCALAPPDATA%\PhoneBridge，以保留更新前的配对、Root 选择和权限设置。不要卸载旧 APK；覆盖安装。电脑先退出旧程序，再解压新便携包，保留整个 Evara 目录与 _internal。无需安装 Python，无需日常使用 PowerShell。
+本版 Windows 1.0.2 / Android 1.0.2。项目原名“手机桥”，新程序为 Evara.exe。Android 包名仍为 cn.personal.phonebridge，电脑资料仍在 %LOCALAPPDATA%\PhoneBridge，以保留更新前的配对、Root 选择和权限设置。不要卸载旧 APK；覆盖安装。电脑先退出旧程序，再解压新便携包，保留整个 Evara 目录与 _internal。无需安装 Python，无需日常使用 PowerShell。
 
 DeepSeek 官方接口专门使用非思考模式兼容配置，见 [0.3.1 修复与复测](WINDOWS_0.3.1_DEEPSEEK.md)。其他服务仍使用标准 Responses 请求。
 

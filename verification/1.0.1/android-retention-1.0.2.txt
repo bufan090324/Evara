@@ -1,0 +1,4 @@
+INSTRUMENTATION_RESULT: pairing_keystore=verified
+INSTRUMENTATION_RESULT: saved_capture_choice=retained
+INSTRUMENTATION_RESULT: version=1.0.2
+INSTRUMENTATION_CODE: -1

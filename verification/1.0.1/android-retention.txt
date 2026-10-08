@@ -1,0 +1,13 @@
+Android Emulator API30，开发 Instrumentation 实际结果；不是红米真机或系统安装器流程。
+
+INSTRUMENTATION_RESULT: pairing_keystore=verified
+INSTRUMENTATION_RESULT: saved_capture_choice=retained
+INSTRUMENTATION_RESULT: version=1.0.0
+INSTRUMENTATION_CODE: -1
+
+INSTRUMENTATION_RESULT: pairing_keystore=verified
+INSTRUMENTATION_RESULT: saved_capture_choice=retained
+INSTRUMENTATION_RESULT: version=1.0.1
+INSTRUMENTATION_CODE: -1
+
+无障碍 enabled_accessibility_services 升级前后均为 cn.personal.phonebridge/cn.personal.phonebridge.BridgeAccessibility。

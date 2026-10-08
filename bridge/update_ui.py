@@ -1,5 +1,5 @@
 import pathlib
-from PySide6.QtWidgets import QLineEdit, QLabel, QHBoxLayout, QProgressBar, QMessageBox
+from PySide6.QtWidgets import QLineEdit, QLabel, QHBoxLayout, QProgressBar, QMessageBox, QCheckBox
 
 
 class UpdatePage:
@@ -10,8 +10,10 @@ class UpdatePage:
         layout.addWidget(QLabel("当前 Windows 版本：" + VERSION))
         self.update_source = QLineEdit(); self.update_source.setMaxLength(2048); self.update_source.setPlaceholderText("签名 update.json 的固定 HTTPS 地址")
         layout.addWidget(self.update_source)
+        self.update_direct = QCheckBox("仅软件更新使用直连（不使用系统代理，需保存设置）")
+        layout.addWidget(self.update_direct)
         row = QHBoxLayout(); layout.addLayout(row)
-        self.update_save = self.button(row, "保存更新源", lambda: self.send("update_save", {"url": self.update_source.text().strip()}))
+        self.update_save = self.button(row, "保存更新源与网络设置", lambda: self.send("update_save", {"url": self.update_source.text().strip(), "direct": self.update_direct.isChecked()}))
         self.update_check = self.button(row, "检查新版", lambda: self.send("update_check"))
         self.update_download = self.button(row, "下载并校验新版", self.download_update)
         self.update_cancel = self.button(row, "取消检查 / 下载", lambda: self.send("update_cancel"))
@@ -36,6 +38,7 @@ class UpdatePage:
     def update_result(self, method, data):
         if method in {"update_load", "update_save"}:
             self.update_source.setText(data.get("source", "")); self.update_available = False
+            self.update_direct.setChecked(data.get("direct", False))
             self.update_info.setText("更新源已加载/保存；请主动检查新版")
         elif method == "update_check":
             self.update_available = data.get("available", False)
@@ -53,3 +56,4 @@ class UpdatePage:
         self.update_cancel.setEnabled(busy and not self.closing)
         self.update_start.setEnabled(bool(self.update_launch_path) and not busy and not self.closing)
         self.update_source.setEnabled(not busy)
+        self.update_direct.setEnabled(not busy and not self.closing)

@@ -34,3 +34,7 @@ python publish_update.py --windows Evara-Windows-1.0.1-x64.zip --apk Evara-Andro
 ```
 
 将生成的 update.json 和对应文件上传同一个 GitHub Release，并设为最新正式版本。不发布预发行版作为日常更新。手动可修改客户端中的更新源，但新地址的清单仍需由内置公钥对应的私钥签名；不能通过更换地址绕过验证。只使用 GitHub Releases，无需云端数据库或客户端 GitHub 登录。
+
+## 1.0.2 下载网络设置
+
+Windows 更新页可保存“仅软件更新使用直连”。默认仍使用系统代理；直连可能失败，选择只影响公开更新下载。两端下载总预算为 30 分钟，仍有短连接/读取超时、用户取消及文件大小限制，不自动重试。安装包较大时可在浏览器从 GitHub Release 手动下载覆盖升级；保持完整 Windows 目录和同签名 APK。当前能力以 FEATURES.md 为准。

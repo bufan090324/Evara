@@ -1,0 +1,14 @@
+[
+  {
+    "path": "system_proxy",
+    "bytes": 524288,
+    "seconds": 12.68,
+    "status": "received"
+  },
+  {
+    "path": "direct",
+    "bytes": 530560,
+    "seconds": 1.35,
+    "status": "received"
+  }
+]

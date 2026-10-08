@@ -1,0 +1,10 @@
+{
+  "from": "1.0.0",
+  "to": "1.0.1",
+  "public_https_feed": true,
+  "signed_manifest_verified": true,
+  "download_sha256_size_verified": true,
+  "downloaded_native_exe_started": true,
+  "pairing_and_dpapi_files_unchanged": true,
+  "limit": "Production update backend exercised; GUI confirmation clicks and Android system installer not tested"
+}
