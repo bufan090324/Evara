@@ -1,0 +1,376 @@
+{
+  "nodes": [
+    {
+      "node_id": "0/0/0",
+      "text": "",
+      "description": "返回",
+      "view_id": "com.huawei.health:id/hwappbarpattern_cancel_icon"
+    },
+    {
+      "node_id": "0/1",
+      "text": "睡眠",
+      "description": "",
+      "view_id": "com.huawei.health:id/action_bar_title"
+    },
+    {
+      "node_id": "0/2/0",
+      "text": "",
+      "description": "更多选项",
+      "view_id": "com.huawei.health:id/hwappbarpattern_ok_icon"
+    },
+    {
+      "node_id": "0/3/0",
+      "text": "日",
+      "description": "",
+      "view_id": ""
+    },
+    {
+      "node_id": "0/3/1",
+      "text": "周",
+      "description": "",
+      "view_id": ""
+    },
+    {
+      "node_id": "0/3/2",
+      "text": "月",
+      "description": "",
+      "view_id": ""
+    },
+    {
+      "node_id": "0/3/3",
+      "text": "年",
+      "description": "",
+      "view_id": ""
+    },
+    {
+      "node_id": "0/6/1/0/5",
+      "text": "睡眠\n比例",
+      "description": "",
+      "view_id": "com.huawei.health:id/section_ring_chart_desc"
+    },
+    {
+      "node_id": "0/6/1/0/6/1/0",
+      "text": "浅睡",
+      "description": "",
+      "view_id": "com.huawei.health:id/ring_chart_legend_title"
+    },
+    {
+      "node_id": "0/6/1/0/6/1/1",
+      "text": "4 小时 20 分钟",
+      "description": "",
+      "view_id": "com.huawei.health:id/ring_chart_item_value"
+    },
+    {
+      "node_id": "0/6/1/0/6/2/0",
+      "text": "快速眼动",
+      "description": "",
+      "view_id": "com.huawei.health:id/ring_chart_legend_title"
+    },
+    {
+      "node_id": "0/6/1/0/6/2/1",
+      "text": "1 小时 30 分钟",
+      "description": "",
+      "view_id": "com.huawei.health:id/ring_chart_item_value"
+    },
+    {
+      "node_id": "0/6/1/0/7/0/0",
+      "text": "",
+      "description": "夜间睡眠，7 小时 0 分钟偏短，参考值：6-10 小时",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/7/0/0/0",
+      "text": "夜间睡眠",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/0/0/1",
+      "text": "7 小时 0 分钟",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/0/0/2",
+      "text": "偏短",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/1/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/7/1/0/0",
+      "text": "深睡比例",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/1/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/1/0/2",
+      "text": "正常",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/2/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/7/2/0/0",
+      "text": "浅睡比例",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/2/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/2/0/2",
+      "text": "正常",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/3/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/7/3/0/0",
+      "text": "快速眼动比例",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/3/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/7/3/0/2",
+      "text": "正常",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/0/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/8/0/0/0",
+      "text": "深睡连续性",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/0/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/0/0/2",
+      "text": "正常",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/1/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/8/1/0/0",
+      "text": "清醒次数",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/1/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/1/0/2",
+      "text": "正常",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/2/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/8/2/0/0",
+      "text": "呼吸质量",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/2/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/2/0/2",
+      "text": "正常",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/3/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/8/3/0/0",
+      "text": "平均心率",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/3/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/3/0/2",
+      "text": "范围内",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/4/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/8/4/0/0",
+      "text": "平均心率变异性 (HRV)",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/4/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/4/0/2",
+      "text": "范围内",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/5/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/8/5/0/0",
+      "text": "平均血氧饱和度",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/5/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/5/0/2",
+      "text": "范围内",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/6/0",
+      "text": "",
+      "description": "[额外指标描述已脱敏]",
+      "view_id": "com.huawei.health:id/sleep_expand_card"
+    },
+    {
+      "node_id": "0/6/1/0/8/6/0/0",
+      "text": "平均呼吸率",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_left_top_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/6/0/1",
+      "text": "[额外数值已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/left_top_value_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/6/0/2",
+      "text": "范围内",
+      "description": "",
+      "view_id": "com.huawei.health:id/item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/7",
+      "text": "",
+      "description": "零星小睡，30 分钟",
+      "view_id": "com.huawei.health:id/expand_report_ext_item_root_view"
+    },
+    {
+      "node_id": "0/6/1/0/8/7/0",
+      "text": "零星小睡",
+      "description": "",
+      "view_id": "com.huawei.health:id/expand_report_ext_item_left_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/7/1",
+      "text": "30 分钟",
+      "description": "",
+      "view_id": "com.huawei.health:id/expand_report_ext_item_right_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/8",
+      "text": "",
+      "description": "总睡眠，7 小时 30 分钟",
+      "view_id": "com.huawei.health:id/expand_report_ext_item_root_view"
+    },
+    {
+      "node_id": "0/6/1/0/8/8/0",
+      "text": "总睡眠",
+      "description": "",
+      "view_id": "com.huawei.health:id/expand_report_ext_item_left_text"
+    },
+    {
+      "node_id": "0/6/1/0/8/8/1",
+      "text": "7 小时 30 分钟",
+      "description": "",
+      "view_id": "com.huawei.health:id/expand_report_ext_item_right_text"
+    }
+  ]
+}

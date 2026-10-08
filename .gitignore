@@ -1,0 +1,16 @@
+.gradle/
+**/build/
+local.properties
+.idea/
+bridge/.venv/
+bridge/private/
+__pycache__/
+
+**/credentials.bin
+.kotlin/
+**/*.pem
+**/*.keystore
+**/*.jks
+**/*.apk
+**/*.part
+**/update-source.json

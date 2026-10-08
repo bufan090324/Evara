@@ -1,0 +1,95 @@
+{
+  "package": "com.huawei.health",
+  "nodes": [
+    {
+      "node_id": "0/3",
+      "parent": null,
+      "text": "",
+      "description": "",
+      "view_id": "com.huawei.health:id/id_recyclerview",
+      "class": "android.widget.GridView",
+      "bounds": [
+        0,
+        250,
+        1080,
+        2202
+      ],
+      "clickable": false,
+      "scrollable": true,
+      "enabled": true,
+      "visible": true
+    },
+    {
+      "node_id": "0/3/3/0",
+      "parent": "0/3",
+      "text": "睡眠",
+      "description": "",
+      "view_id": "com.huawei.health:id/title_text",
+      "class": "android.widget.TextView",
+      "bounds": [
+        186,
+        834,
+        252,
+        879
+      ],
+      "clickable": false,
+      "scrollable": false,
+      "enabled": true,
+      "visible": true
+    },
+    {
+      "node_id": "0/3/17/0/0/0",
+      "parent": "0/3",
+      "text": "",
+      "description": "",
+      "view_id": "com.huawei.health:id/function_set_card_view",
+      "class": "android.widget.FrameLayout",
+      "bounds": [
+        33,
+        1265,
+        524,
+        1756
+      ],
+      "clickable": true,
+      "scrollable": false,
+      "enabled": true,
+      "visible": true
+    },
+    {
+      "node_id": "0/3/17/0/0/0/0",
+      "parent": "0/3/17/0/0/0",
+      "text": "睡眠",
+      "description": "",
+      "view_id": "com.huawei.health:id/function_set_items_title",
+      "class": "android.widget.TextView",
+      "bounds": [
+        66,
+        1298,
+        142,
+        1350
+      ],
+      "clickable": false,
+      "scrollable": false,
+      "enabled": true,
+      "visible": true
+    },
+    {
+      "node_id": "0/3/17/0/0/0/1",
+      "parent": "0/3/17/0/0/0",
+      "text": "[时长已脱敏]",
+      "description": "",
+      "view_id": "com.huawei.health:id/function_set_items_data",
+      "class": "android.widget.TextView",
+      "bounds": [
+        66,
+        1356,
+        348,
+        1431
+      ],
+      "clickable": false,
+      "scrollable": false,
+      "enabled": true,
+      "visible": true
+    }
+  ]
+}
