@@ -7,7 +7,7 @@ import pefile
 root = Path(SPECPATH)
 qt = Path(PySide6.__file__).parent
 a = Analysis([str(root / 'desktop.py')], pathex=[str(root)],
-    binaries=[], datas=[], hiddenimports=['win32timezone'],
+    binaries=[], datas=[(str(root.parent / "assets" / "evara.ico"), "assets")], hiddenimports=['win32timezone'],
     excludes=['PySide6.QtQml', 'PySide6.QtQuick', 'PySide6.QtOpenGL', 'PySide6.QtPdf',
               'PySide6.QtSql', 'PySide6.QtTest', 'PySide6.QtXml', 'tkinter', 'unittest'],
     noarchive=False, optimize=1)
@@ -33,5 +33,5 @@ if not list(qt.glob('icu*.dll')):
 pyz = PYZ(a.pure)
 exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='Evara',
     debug=False, bootloader_ignore_signals=False, strip=False, upx=False,
-    console=False, uac_admin=False, disable_windowed_traceback=True)
+    console=False, icon=str(root.parent / 'assets' / 'evara.ico'), uac_admin=False, disable_windowed_traceback=True)
 coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name='Evara')

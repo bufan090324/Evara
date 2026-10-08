@@ -40,6 +40,7 @@ class NetworkWorker(QThread):
         self.administration = None
         self.ai_task = None
         self.ai_history = []
+        self.ai_capabilities = {}
         self.update_task = None
 
     def run(self):
@@ -108,16 +109,21 @@ class NetworkWorker(QThread):
                 if self.ai_task and not self.ai_task.done(): raise ValueError("AI 正在运行，请先停止")
                 if action == "ai_load": data = self.ai_settings.public()
                 elif action == "ai_save":
-                    data = self.ai_settings.save(params["endpoint"], params["model"], params.get("key", "")); self.ai_history.clear()
-                elif action == "ai_delete": data = self.ai_settings.delete(); self.ai_history.clear()
+                    data = self.ai_settings.save(params["endpoint"], params["model"], params.get("key", "")); self.ai_history.clear(); self.ai_capabilities.clear()
+                elif action == "ai_delete": data = self.ai_settings.delete(); self.ai_history.clear(); self.ai_capabilities.clear()
                 elif action == "ai_clear": self.ai_history.clear(); data = {}
                 elif action in {"ai_test", "ai_chat"}:
                     self.ai_task = asyncio.current_task()
                     client = ResponsesClient(self.ai_settings.load())
                     try:
-                        if action == "ai_test": data = await client.test()
+                        if action == "ai_test":
+                            from capabilities import probe
+                            data = await probe(client, lambda event: self.ai_event.emit(identifier, event))
+                            self.ai_capabilities = data["capabilities"]
                         else:
                             if not params.get("consent"): raise ValueError("需要同意将对话及读取的健康数据发送给所选 AI 服务")
+                            if params.get("screenshot") and self.ai_capabilities.get("image", {}).get("status") != "verified":
+                                raise ValueError("图片能力未实测通过，请先检测或关闭截图发送授权")
                             agent = PhoneAgent(self.service, client, lambda: self.generation,
                                               lambda event: self.ai_event.emit(identifier, event), self.ai_history)
                             data = {"answer": await agent.run(params["text"], params.get("control", False), params.get("screenshot", False))}
@@ -177,12 +183,14 @@ class NetworkWorker(QThread):
                 message = "绑定 IP 不在本机：刷新网卡地址，删除旧配对并重新生成"
             else:
                 message = f"系统/网络错误（代码 {code}）：检查资料访问权限、局域网和防火墙"
-            self.failure.emit(identifier, message)
+            from failures import display
+            self.failure.emit(identifier, display(error) if hasattr(error, "category") else message)
         except (ValueError, KeyError, RuntimeError) as error:
             # Known validation errors contain no credential data; JSON decode messages are replaced.
             import json
             message = "配对资料 JSON 损坏，请删除后重新生成" if isinstance(error, json.JSONDecodeError) else str(error)
-            self.failure.emit(identifier, message)
+            from failures import display
+            self.failure.emit(identifier, display(error) if hasattr(error, "category") else message)
         except Exception:
             self.failure.emit(identifier, "内部错误：请查看脱敏诊断；未自动重试")
 

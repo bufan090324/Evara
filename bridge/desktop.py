@@ -23,7 +23,7 @@ from worker import NetworkWorker
 from ai_ui import AIPage
 from update_ui import UpdatePage
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 
 class ImageView(QLabel):
@@ -481,6 +481,9 @@ class MainWindow(QMainWindow, AIPage, UpdatePage):
         elapsed = max(0, int((self.task_finished or time.monotonic()) - self.task_started)) if self.task_started else 0
         self.task_label.setText(f"状态：{STATES.get(state, state)} · 耗时（电脑观测）：{elapsed} 秒\n任务：{task.get('task_id') or '—'}\n步骤：{task.get('step', '未开始')}\n{task.get('reason') or ''}")
         self.review_label.setText("需要核对 / 未读取完整证据" if needs_review(task) else "已完成：手机返回可核对证据，请与手机报告核对")
+        from failures import task_failure, LABELS
+        fault = task_failure(task)
+        if fault: self.review_label.setText("[" + LABELS[fault["category"]] + "/" + fault["code"] + "] " + fault["message"])
         for i, record in enumerate(rows(task)):
             for j, value in enumerate(record):
                 item = QTableWidgetItem(value); item.setToolTip(value); self.table.setItem(i, j, item)
@@ -570,7 +573,7 @@ class MainWindow(QMainWindow, AIPage, UpdatePage):
 
 def main():
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    app = QApplication(sys.argv); app.setApplicationName("Evara"); app.setOrganizationName("PhoneBridge")
+    app = QApplication(sys.argv); app.setWindowIcon(QIcon(str((pathlib.Path(__file__).resolve().parent / "assets" / "evara.ico") if getattr(sys, "frozen", False) else (pathlib.Path(__file__).resolve().parent.parent / "assets" / "evara.ico")))); app.setApplicationName("Evara"); app.setOrganizationName("PhoneBridge")
     # Optional package smoke probe writes only to an explicitly supplied test directory.
     probe = pathlib.Path(sys.argv[2]).resolve() if len(sys.argv) == 3 and sys.argv[1] == "--package-probe" else None
     directory = (probe / "appdata") if probe else user_directory(); directory.mkdir(parents=True, exist_ok=True)

@@ -8,6 +8,7 @@ class AIPage:
         self.ai_busy = False
         self.ai_run_id = None
         self.ai_ready = False
+        self.ai_image_verified = False
         layout = self.page("AI 对话", "兼容 Responses API。对话及授权读取的健康数据会发送到所选服务，离开局域网；截图另行授权。API 费用及数据保留由服务提供商决定。")
         form = QFormLayout()
         self.ai_endpoint = QLineEdit("https://api.openai.com/v1"); self.ai_endpoint.setMaxLength(500)
@@ -18,9 +19,11 @@ class AIPage:
         layout.addLayout(form)
         row = QHBoxLayout(); layout.addLayout(row)
         self.ai_save = self.button(row, "加密保存设置", self.save_ai_settings)
-        self.ai_test = self.button(row, "测试 API 与工具调用", self.test_ai)
+        self.ai_test = self.button(row, "检测文本 / 工具 / 图片 / 流式", self.test_ai)
         self.ai_delete = self.button(row, "删除 AI 设置", self.delete_ai_settings)
         self.ai_info = QLabel("正在检查 AI 设置…"); self.ai_info.setWordWrap(True); layout.addWidget(self.ai_info)
+        self.ai_capabilities = QLabel("文本：未检测 · 工具：未检测 · 图片：未检测 · 流式：未检测")
+        self.ai_capabilities.setWordWrap(True); layout.addWidget(self.ai_capabilities)
         self.ai_consent = QCheckBox("允许将本轮对话及读取到的健康数据发送给所选 AI 服务")
         self.ai_control = QCheckBox("允许 AI 发起手机读取/取消任务（本次运行）")
         self.ai_screenshot = QCheckBox("允许将必要的手机截图发送给 AI（本次运行，需要视觉模型）")
@@ -46,8 +49,9 @@ class AIPage:
         self.ai_key.clear()
 
     def test_ai(self):
-        if QMessageBox.question(self, "测试 AI 服务", "测试将向已保存服务发送一段不含健康数据的文本与测试工具，可能产生 API 费用，不操作手机。是否继续？") == QMessageBox.StandardButton.Yes:
+        if QMessageBox.question(self, "测试 AI 服务", "独立发送四次测试请求：文本、工具、合成测试图片及流式响应。可能产生 API 费用，不读取手机或健康数据。是否继续？") == QMessageBox.StandardButton.Yes:
             self.send("ai_test")
+            self.ai_info.setText("正在逐项检测四种能力，可用“停止 AI”取消；不读取手机。")
 
     def delete_ai_settings(self):
         if QMessageBox.question(self, "删除 AI 设置", "删除当前用户加密保存的服务设置与密钥，并清除内存对话。是否继续？") == QMessageBox.StandardButton.Yes:
@@ -68,6 +72,10 @@ class AIPage:
     def on_ai_event(self, identifier, event):
         if identifier != self.ai_run_id or not self.ai_busy: return
         if event.get("kind") == "progress": self.ai_progress.setText(event.get("text", ""))
+        elif event.get("kind") == "failure":
+            from failures import LABELS
+            failure = event["data"]
+            self.ai_transcript.appendPlainText("系统：[" + LABELS.get(failure["category"], failure["category"]) + "/" + failure["code"] + "] " + failure["message"])
         elif event.get("kind") == "task":
             task = event["data"]
             if self.task_id != task.get("task_id"):
@@ -79,12 +87,19 @@ class AIPage:
 
     def ai_result(self, identifier, method, data):
         if method in {"ai_load", "ai_save", "ai_delete"}:
+            self.ai_image_verified = False; self.ai_screenshot.setChecked(False)
+            self.ai_capabilities.setText("文本：未检测 · 工具：未检测 · 图片：未检测 · 流式：未检测")
             self.ai_ready = data.get("key_set", False)
             self.ai_endpoint.setText(data.get("endpoint", "")); self.ai_model.setText(data.get("model", ""))
             self.ai_key.clear(); self.ai_key.setPlaceholderText("已加密保存；留空保留旧密钥" if self.ai_ready else "请填写 API Key")
             self.ai_info.setText("当前用户 DPAPI 加密设置已加载；请测试兼容性。修改后先保存，测试和对话均使用已保存配置。" if self.ai_ready else "尚未设置 API Key；手机手动功能仍可使用")
             if method == "ai_delete": self.ai_transcript.clear()
-        elif method == "ai_test": self.ai_info.setText(data.get("message", "测试完成") + ("；DeepSeek 使用非思考兼容配置，手机操作仍由 Evara 校验" if self.ai_endpoint.text().rstrip("/") in {"https://api.deepseek.com", "https://api.deepseek.com/v1"} else ""))
+        elif method == "ai_test":
+            self.ai_info.setText(data.get("message", "测试完成"))
+            matrix = data.get("capabilities", {})
+            self.ai_image_verified = matrix.get("image", {}).get("status") == "verified"
+            if not self.ai_image_verified: self.ai_screenshot.setChecked(False)
+            self.ai_capabilities.setText("\n".join(label + "：" + ("已实测通过" if matrix.get(kind, {}).get("status") == "verified" else "未确认") + "；" + matrix.get(kind, {}).get("message", "未检测") for kind, label in [("text", "文本"), ("tools", "工具"), ("image", "图片"), ("stream", "流式")]))
         elif method == "ai_clear": self.ai_transcript.clear(); self.ai_progress.setText("对话已清除（仅内存）")
         elif method == "ai_chat" and identifier == self.ai_run_id:
             self.ai_busy = False; self.ai_run_id = None
@@ -104,4 +119,6 @@ class AIPage:
         for widget in [self.ai_endpoint, self.ai_model, self.ai_key, self.ai_save, self.ai_delete, self.ai_clear]: widget.setEnabled(editing)
         self.ai_test.setEnabled(editing and self.ai_ready)
         self.ai_send.setEnabled(editing and self.ai_ready and self.ai_consent.isChecked() and not self.pending and self.task_data.get("state") != "running")
-        self.ai_stop.setEnabled(self.ai_busy and not self.has_pending("ai_cancel") and not self.closing)
+        self.ai_screenshot.setEnabled(editing and self.ai_image_verified)
+        self.ai_screenshot.setToolTip("需先独立实测图片识别通过；工具调用成功不能证明视觉能力")
+        self.ai_stop.setEnabled((self.ai_busy or self.has_pending("ai_test")) and not self.has_pending("ai_cancel") and not self.closing)

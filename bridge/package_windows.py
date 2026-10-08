@@ -18,7 +18,7 @@ def package(dist, output):
     if not (dist / "Evara.exe").is_file():
         raise ValueError("找不到 Evara.exe，请先构建")
     for file in dist.rglob("*"):
-        if file.is_file() and (file.name.lower() in {"pairing.json", "key.pem", "cert.pem", "credentials.bin", "direct_url.json"} or file.suffix.lower() in {"jpg", "jpeg", "png", "log"}):
+        if file.is_file() and (file.name.lower() in {"pairing.json", "key.pem", "cert.pem", "credentials.bin", "direct_url.json"} or file.suffix.lower() in {".jpg", ".jpeg", ".png", ".log"}):
             raise ValueError("构建目录含敏感资料/测试文件/机器元数据，拒绝打包")
     # Only license texts are copied from dependency metadata, not direct_url or RECORD paths.
     licenses = dist / "licenses"; licenses.mkdir(exist_ok=True)
@@ -38,9 +38,9 @@ def package(dist, output):
     python_license = pathlib.Path(sys.base_prefix) / "LICENSE.txt"
     if python_license.exists(): shutil.copyfile(python_license, licenses / "Python-LICENSE.txt")
     shutil.copyfile(source / "THIRD_PARTY_NOTICES.md", dist / "THIRD_PARTY_NOTICES.md")
-    for name in ["WINDOWS_DESKTOP.md", "WINDOWS_MANUAL_TEST.md", "WINDOWS_TEST_RESULTS.md", "AI_GUIDE.md", "AI_TEST_RESULTS.md", "WINDOWS_0.3.1_DEEPSEEK.md", "AI_0.3.1_TEST_RESULTS.md", "UPDATES.md", "TEST_RESULTS_1.0.0.md"]:
+    for name in ["README.md", "FEATURES.md", "WINDOWS_MANUAL_TEST.md", "AI_GUIDE.md", "UPDATES.md", "TEST_RESULTS_1.0.1.md"]:
         if (source.parent / name).exists(): shutil.copyfile(source.parent / name, dist / name)
-    (dist / "双击运行说明.txt").write_text("双击 Evara.exe。请保留整个目录及 _internal。无需安装 Python。\n首次选择局域网地址，生成配对，复制到自己的手机并核对指纹，然后启动服务。\n详细操作见 WINDOWS_DESKTOP.md。\n", encoding="utf-8")
+    (dist / "双击运行说明.txt").write_text("双击 Evara.exe。请保留整个目录及 _internal。无需安装 Python。\n首次选择局域网地址，生成配对，扫码或粘贴到自己的手机并核对指纹，然后启动服务。\n当前操作见 README.md；能力与限制见 FEATURES.md。\n", encoding="utf-8")
     zip_path = output / "Evara-Windows-x64-便携版.zip"
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for file in dist.rglob("*"):

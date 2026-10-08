@@ -1,13 +1,19 @@
 """Bounded, TLS-verified Responses API client. No automatic retries or redirects."""
 import asyncio
 import json
+import re
 import httpx
 from urllib.parse import urlsplit
 from ai_settings import AISettings
 
 
 class AIError(ValueError):
-    pass
+    def __init__(self, message, category="model_request", code="REQUEST_FAILED"):
+        super().__init__(message)
+        self.category, self.code = category, code
+
+    def public(self):
+        return {"category": self.category, "code": self.code, "message": str(self)}
 
 
 def error_hint(status, content, key):
@@ -45,6 +51,7 @@ class ResponsesClient:
     def __init__(self, settings, transport=None):
         AISettings.validate(dict(settings))
         self.settings = settings
+        self.last_request_id = None
         # Exact official host only: no implicit changes for arbitrary proxies/providers.
         self.deepseek = urlsplit(settings["endpoint"]).hostname == "api.deepseek.com"
         self.http = httpx.AsyncClient(transport=transport, trust_env=False, follow_redirects=False,
@@ -53,11 +60,12 @@ class ResponsesClient:
     async def close(self):
         await self.http.aclose()
 
-    async def respond(self, inputs, tools, instructions, tool_choice=None):
+    async def respond(self, inputs, tools, instructions, tool_choice=None, stream=False):
         body = {"model": self.settings["model"], "input": inputs, "instructions": instructions,
                 "tools": tools, "parallel_tool_calls": False, "store": False,
                 "include": ["reasoning.encrypted_content"], "max_output_tokens": 4096}
         if tool_choice: body["tool_choice"] = tool_choice
+        if stream: body["stream"] = True
         if self.deepseek:
             # Official DeepSeek supports plain reasoning, not encrypted reasoning;
             # strict mode is a Beta feature. Local tool validation remains mandatory.
@@ -69,6 +77,8 @@ class ResponsesClient:
             async with asyncio.timeout(65):
                 async with self.http.stream("POST", self.settings["endpoint"] + "/responses",
                     headers={"Authorization": "Bearer " + self.settings["key"]}, json=body) as response:
+                    request_id = response.headers.get("x-request-id", "")
+                    self.last_request_id = request_id if re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id) else None
                     if response.status_code != 200:
                         content = bytearray()
                         async for chunk in response.aiter_bytes():
@@ -77,6 +87,9 @@ class ResponsesClient:
                             content.extend(chunk)
                         hint = error_hint(response.status_code, content, self.settings["key"])
                         raise AIError(f"AI HTTP {response.status_code}：{hint}；未自动重试")
+                    if stream:
+                        from capabilities import read_stream
+                        return await read_stream(response)
                     content = bytearray()
                     async for chunk in response.aiter_bytes():
                         content.extend(chunk)

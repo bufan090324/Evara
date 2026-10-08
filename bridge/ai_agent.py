@@ -49,18 +49,20 @@ class PhoneAgent:
         self.screenshot = False
 
     def fence(self):
-        if self.generation() != self.initial_generation: raise AIError("手机连接已改变，本轮操作已停止；不会补发旧动作")
+        if self.generation() != self.initial_generation: raise AIError("手机连接已改变，本轮操作已停止；不会补发旧动作", "tool", "CONNECTION_CHANGED")
 
     async def phone(self, method, params=None):
         self.fence()
         try:
             response = await self.service.request(method, params or {})
         except TimeoutError:
-            raise AIError("手机请求超时：动作可能已执行，请核对手机；未自动重试") from None
+            raise AIError("手机请求超时：动作可能已执行，请核对手机；未自动重试", "tool", "PHONE_TIMEOUT") from None
+        except (ConnectionError, OSError):
+            raise AIError("手机连接不可用；未自动重试", "tool", "PHONE_CONNECTION") from None
         self.fence()
         if not response.get("ok"):
             error = response.get("error") or {}
-            raise AIError(str(error.get("code", "PHONE_ERROR")) + "：" + str(error.get("message", "手机拒绝操作")))
+            raise AIError(str(error.get("code", "PHONE_ERROR")) + "：" + str(error.get("message", "手机拒绝操作")), "tool", str(error.get("code", "PHONE_ERROR")))
         return response.get("data") or {}
 
     async def cancel_owned(self):
@@ -75,7 +77,7 @@ class PhoneAgent:
     async def invoke(self, name, args):
         schemas = {t["name"]: t for t in tools(self.screenshot)}
         if name not in schemas or not isinstance(args, dict) or set(args) != set(schemas[name]["parameters"]["properties"]):
-            raise AIError("模型工具名称或参数不在允许范围")
+            raise AIError("模型工具名称或参数不在允许范围", "tool", "INVALID_ARGUMENTS")
         self.fence()
         if name == "device_status":
             data = await self.phone("device_status")
@@ -116,7 +118,12 @@ class PhoneAgent:
                 task = await self.phone("get_task_status")
                 if task.get("task_id") != self.owned_id: raise AIError("手机任务已改变，迟到结果已丢弃")
                 self.emit({"kind": "task", "data": task})
-                if task.get("state") in {"completed", "needs_user", "failed", "cancelled"}: return scrub(task), None
+                if task.get("state") in {"completed", "needs_user", "failed", "cancelled"}:
+                    from failures import task_failure
+                    result = scrub(task)
+                    failure = task_failure(task)
+                    if failure: result["failure"] = failure; self.emit({"kind": "failure", "data": failure})
+                    return result, None
                 await asyncio.sleep(1)
             raise AIError("睡眠任务超过 100 秒，已停止查询并尝试取消；请核对手机")
         raise AIError("未知工具")
@@ -157,7 +164,9 @@ class PhoneAgent:
                     try: data, picture = await self.invoke(call.get("name"), args)
                     except AIError as error:
                         await self.cancel_owned()
-                        data, picture = {"error": str(error)}, None
+                        if error.category == "model_request": error.category = "tool"
+                        data, picture = {"error": str(error), "failure": error.public()}, None
+                        self.emit({"kind": "failure", "data": error.public()})
                     encoded = json.dumps(data, ensure_ascii=False)
                     if len(encoded) > 150000: encoded = json.dumps({"error": "页面/结果过大，未发送给 AI；请手动查看"})
                     inputs.append({"type": "function_call_output", "call_id": call_id, "output": encoded})
