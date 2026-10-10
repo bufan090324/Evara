@@ -9,6 +9,7 @@ from ai_settings import AISettings
 from ai_client import ResponsesClient
 from ai_agent import PhoneAgent
 from updates import UpdateManager
+from phone_updates import PhoneUpdateCache
 
 
 def public_pairing(store):
@@ -51,7 +52,8 @@ class NetworkWorker(QThread):
             self.store = PairingStore(self.directory)
             self.ai_settings = AISettings(self.store.directory)
             self.updates = UpdateManager(self.store.directory)
-            self.service = BridgeService(self.network_event)
+            self.phone_updates = PhoneUpdateCache(self.store.directory)
+            self.service = BridgeService(self.network_event, self.phone_updates)
             self.event.emit({"kind": "worker_ready", "detail": "后台网络线程已就绪"})
             await self.shutdown_event.wait()
             for task in list(self.tasks):
@@ -89,8 +91,9 @@ class NetworkWorker(QThread):
                     if self.update_task and not self.update_task.done(): self.update_task.cancel()
                     self.result.emit(identifier, {}); return
                 if self.update_task and not self.update_task.done(): raise ValueError("正在检查或下载更新，请先取消")
-                if action == "update_load": data = {"source": self.updates.source(), "direct": self.updates.direct()}
+                if action == "update_load": data = {"source": self.updates.source(), "direct": self.updates.direct(), "phone_cache": self.phone_updates.status()}
                 elif action == "update_save": data = self.updates.save_source(params["url"], params.get("direct", False))
+                elif action == "update_phone_clear": data = self.phone_updates.clear()
                 else:
                     self.update_task = asyncio.current_task()
                     try:
@@ -98,6 +101,8 @@ class NetworkWorker(QThread):
                             from desktop import VERSION
                             data = await self.updates.check(VERSION)
                         elif action == "update_download": data = await self.updates.download(lambda done, total: self.update_event.emit({"done": done, "total": total}))
+                        elif action == "update_phone_prepare":
+                            data = await self.phone_updates.prepare(self.updates.source(), self.updates.direct(), lambda done,total: self.update_event.emit({"done":done,"total":total,"phone":True}))
                         else: raise ValueError("未知更新动作")
                     finally: self.update_task = None
                 self.result.emit(identifier, data); return

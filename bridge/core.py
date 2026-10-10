@@ -210,10 +210,11 @@ def load_pairing(folder, allow_expired=False):
 
 class BridgeService:
     """Async public API for CLI, GUI and future local MCP wrappers."""
-    def __init__(self, on_event=None):
+    def __init__(self, on_event=None, phone_updates=None):
         self.on_event = on_event or (lambda kind, detail: None)
         self.bridge = None
         self.server = None
+        self.phone_updates = phone_updates
 
     async def start(self, folder):
         if self.server is not None:
@@ -223,8 +224,13 @@ class BridgeService:
         context.minimum_version = ssl.TLSVersion.TLSv1_2
         context.load_cert_chain(pathlib.Path(folder) / "cert.pem", pathlib.Path(folder) / "key.pem")
         bridge = Bridge(p["token"], on_event=self.on_event)
+        gateway = None
+        if self.phone_updates is not None:
+            from phone_updates import PairedUpdateGateway
+            gateway = PairedUpdateGateway(self.phone_updates, p["token"])
         server = await serve(bridge.handler, p["host"], p["port"], ssl=context,
-                             max_size=MAX_RESPONSE, max_queue=8, ping_interval=15, ping_timeout=15, close_timeout=2)
+                             max_size=MAX_RESPONSE, max_queue=8, ping_interval=15, ping_timeout=15, close_timeout=2,
+                             process_request=gateway.process_request if gateway else None)
         self.bridge, self.server = bridge, server
         self.on_event("listening", f"{p['host']}:{p['port']} 等待手机主动连接")
         return {k:v for k,v in p.items() if k not in {"token", "certificate_der"}}

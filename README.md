@@ -1,8 +1,8 @@
-# Evara 1.0.3
+# Evara 1.0.4
 
 个人使用的 Android 11+ 与 Windows x64 局域网客户端，针对华为运动健康中文版的单日报告。Android 不包含模型密钥；可选 AI 服务由 Windows 调用。
 
-[下载安装包](https://github.com/bufan090324/Evara/releases/latest) · [当前能力清单](FEATURES.md) · [通信协议](PROTOCOL.md) · [AI 操作](AI_GUIDE.md) · [更新与发布](UPDATES.md) · [验证记录](TEST_RESULTS_1.0.3.md)
+[下载安装包](https://github.com/bufan090324/Evara/releases/latest) · [当前能力清单](FEATURES.md) · [通信协议](PROTOCOL.md) · [AI 操作](AI_GUIDE.md) · [更新与发布](UPDATES.md) · [验证记录](TEST_RESULTS_1.0.4.md)
 
 ## 开始使用
 
@@ -12,6 +12,12 @@
 4. 在电脑读取界面或截图；睡眠报告读取手机当前详情，历史日期由用户在手机选择。缺失、冲突或日期不确定需核对，不能当作已确认。
 5. 可选 AI：在 Windows 保存服务地址、模型和密钥，独立检测四项能力。发送手机健康数据前勾选授权；云端处理会离开局域网。
 6. 更新页主动检查并下载。Windows 解压验证后确认启动新版本；Android 由系统安装器确认覆盖安装。保持签名、包名和用户资料目录不变。
+
+## 通过电脑给手机更新
+
+首次需要手动覆盖安装 1.0.4 APK，并启动新版 Windows。之后在电脑“软件更新”点击“下载 / 校验手机更新缓存”，等待完成，再启动配对服务。手机“更新”点击“从配对电脑检查更新（局域网）”，发现更高版本后下载，最后由用户在系统安装器确认覆盖安装。无需 USB、Root 或开启无障碍控制会话。
+
+电脑仍需首次从 GitHub 下载 APK；这一段的网络速度不会因局域网传输而提高。同一 APK 校验后可重复使用缓存，手机后续不必再次从 GitHub 下载。两端需网络互通且电脑服务运行，停止服务、删除配对或清除缓存会使传输失败。原有 HTTPS 在线更新入口仍可使用，详细步骤见 UPDATES.md。
 
 Windows 用户资料保留在 `%LOCALAPPDATA%\PhoneBridge`；名称用于旧版兼容。不要删除资料目录，否则配对与 AI 设置会丢失。安卓包名仍是 `cn.personal.phonebridge`。遇到网络阻断，检查专用网络防火墙和路由器 AP 隔离；程序不自动改防火墙。
 

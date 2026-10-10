@@ -20,7 +20,17 @@ class UpdatePage:
         self.update_info = QLabel("等待检查；不会自动下载或安装"); self.update_info.setWordWrap(True); layout.addWidget(self.update_info)
         self.update_progress = QProgressBar(); self.update_progress.setRange(0, 100); layout.addWidget(self.update_progress)
         self.update_start = self.button(layout, "结束当前会话并启动新版", self.launch_update)
+        layout.addWidget(QLabel("手机局域网更新：电脑先下载并校验 APK；启动连接服务后，手机在更新页选择从配对电脑检查。无需开启手机控制会话。"))
+        self.phone_update_prepare = self.button(layout, "下载 / 校验手机更新缓存", self.prepare_phone_update)
+        self.phone_update_clear = self.button(layout, "清除手机更新缓存", lambda: self.send("update_phone_clear"))
+        self.phone_update_info = QLabel("尚未准备手机 APK；首次使用需先安装支持局域网更新的手机版本")
+        self.phone_update_info.setWordWrap(True); layout.addWidget(self.phone_update_info)
         layout.addStretch()
+
+    def prepare_phone_update(self):
+        self.update_progress.setValue(0)
+        self.phone_update_info.setText("正在从更新源下载并校验；已有同一 APK 时复用缓存")
+        self.send("update_phone_prepare")
 
     def download_update(self):
         if QMessageBox.question(self, "下载 Evara 更新", "下载签名清单指定的新版并核对 SHA-256，解压到当前用户专属更新目录。不会覆盖当前程序或自动启动。是否继续？") == QMessageBox.StandardButton.Yes:
@@ -32,7 +42,7 @@ class UpdatePage:
         self.update_launch_requested = True; self.closing = True; self.close()
 
     def on_update_progress(self, event):
-        if self.has_pending("update_download"):
+        if self.has_pending("update_download", "update_phone_prepare"):
             self.update_progress.setValue(event["done"] * 100 // max(event["total"], 1))
 
     def update_result(self, method, data):
@@ -46,10 +56,16 @@ class UpdatePage:
         elif method == "update_download":
             self.update_launch_path = data["executable"]; self.update_progress.setValue(100)
             self.update_info.setText("新版 " + data["version"] + " 下载、签名清单和文件哈希校验完成。点击下方按钮结束会话并启动；旧目录未覆盖。")
-        elif method == "update_cancel": self.update_info.setText("已请求取消；不会自动恢复下载")
+        elif method == "update_cancel":
+            self.update_info.setText("已请求取消；不会自动恢复下载")
+            self.phone_update_info.setText("已请求取消检查或下载；请主动重新准备手机缓存")
+        elif method == "update_phone_prepare":
+            self.update_progress.setValue(100)
+            self.phone_update_info.setText("手机 APK " + data["version"] + " 已校验缓存（" + ("复用" if data.get("reused") else "新下载") + "）。请启动连接服务，再在手机更新页选择从配对电脑检查；手机仍需确认安装。")
+        elif method == "update_phone_clear": self.phone_update_info.setText("手机缓存已清除，后续传输已撤销")
 
     def update_update_buttons(self):
-        busy = self.has_pending("update_check", "update_download", "update_save", "update_load")
+        busy = self.has_pending("update_check", "update_download", "update_save", "update_load", "update_phone_prepare", "update_phone_clear")
         self.update_save.setEnabled(not busy and not self.closing)
         self.update_check.setEnabled(bool(self.update_source.text()) and not busy and not self.closing)
         self.update_download.setEnabled(self.update_available and not busy and not self.closing)
@@ -57,3 +73,5 @@ class UpdatePage:
         self.update_start.setEnabled(bool(self.update_launch_path) and not busy and not self.closing)
         self.update_source.setEnabled(not busy)
         self.update_direct.setEnabled(not busy and not self.closing)
+        self.phone_update_prepare.setEnabled(bool(self.update_source.text()) and not busy and not self.closing)
+        self.phone_update_clear.setEnabled(not busy and not self.closing)

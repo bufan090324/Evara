@@ -23,7 +23,7 @@ from worker import NetworkWorker
 from ai_ui import AIPage
 from update_ui import UpdatePage
 
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 
 
 class ImageView(QLabel):
@@ -431,7 +431,8 @@ class MainWindow(QMainWindow, AIPage, UpdatePage):
         if not record: return
         method = record["method"]
         if method.startswith("update_"):
-            self.update_info.setText(error); self.log("request_failed:" + method); self.update_buttons(); return
+            (self.phone_update_info if method.startswith("update_phone_") else self.update_info).setText(error)
+            self.log("request_failed:" + method); self.update_buttons(); return
         if method.startswith("ai_"):
             self.ai_failure(identifier, method, error); self.log("request_failed:" + method); self.update_buttons(); return
         admin_methods = {"load", "generate", "import", "delete", "start", "stop", "copy_pairing", "view_pairing", "qr_pairing"}

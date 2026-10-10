@@ -34,6 +34,12 @@ internal class UpdateSection(private val activity:ComponentActivity,private val 
             val item=updater.check();val current=activity.packageManager.getPackageInfo(activity.packageName,0).longVersionCode
             status.text=(if(item.code>current)"发现新版：" else "没有高于当前版本的更新：")+item.version+"\n"+item.notes
         }}
+        button("从配对电脑检查更新（局域网）") {launchOperation {
+            downloaded=null
+            status.text="正在联系配对电脑；请先在 Windows 更新页准备手机缓存并启动服务"
+            val item=updater.checkComputer();val current=activity.packageManager.getPackageInfo(activity.packageName,0).longVersionCode
+            status.text=(if(item.code>current)"电脑已缓存新版：" else "电脑缓存没有高于当前版本的更新：")+item.version+"\n下载按钮将从该电脑局域网读取，不访问 GitHub；安装仍需你确认。\n"+item.notes
+        }}
         download=button("下载并校验新版") {
             AlertDialog.Builder(activity).setTitle("下载 Evara 更新").setMessage("下载签名清单指定的 APK。校验通过后仍需你主动交给系统安装，不静默更新。是否继续？").setNegativeButton("取消",null).setPositiveButton("下载"){_,_ -> launchOperation {
                 val token=generation

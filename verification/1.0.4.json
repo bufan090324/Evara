@@ -1,0 +1,20 @@
+{
+  "version": "1.0.4",
+  "android_version_code": 28,
+  "android_jvm_tests": 168,
+  "windows_tests": 104,
+  "lint_errors": 0,
+  "lint_warnings": 42,
+  "emulator_android": 11,
+  "lan_download_bytes": 55050690,
+  "lan_download_elapsed_ms": 35658,
+  "manifest_signature_verified": true,
+  "file_sha256_verified": true,
+  "apk_signature_and_upgrade_verified": true,
+  "http_close_timeouts": 0,
+  "adb_cover_install_verified": true,
+  "synthetic_pairing_keystore_retained": true,
+  "saved_capture_choice_retained": true,
+  "real_phone_tested": false,
+  "system_installer_confirmation_tested": false
+}

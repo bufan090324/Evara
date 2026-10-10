@@ -4,6 +4,7 @@ import android.app.Instrumentation
 import android.app.Activity
 import android.os.Bundle
 import android.util.Base64
+import kotlinx.coroutines.runBlocking
 
 /** Developer-only upgrade probe. Never included in the distributed application. */
 class UpgradeProbe: Instrumentation() {
@@ -12,6 +13,19 @@ class UpgradeProbe: Instrumentation() {
     override fun onStart() {
         val output=Bundle()
         try {
+            if(args.getString("action")=="lan_download") {
+                val started=System.nanoTime()
+                val updater=AppUpdater(targetContext)
+                val release=runBlocking {updater.checkComputer()}
+                check(release.version==args.getString("version"))
+                val file=runBlocking {updater.download {_,_->}}
+                output.putString("lan_download","verified")
+                output.putString("download_version",release.version)
+                output.putLong("download_bytes",file.length())
+                output.putLong("elapsed_ms",(System.nanoTime()-started)/1000000)
+                finish(Activity.RESULT_OK,output)
+                return
+            }
             val store=PairStore(targetContext)
             if(args.getString("action")=="seed") {
                 check(store.load()==null){"Existing pairing must not be overwritten"}

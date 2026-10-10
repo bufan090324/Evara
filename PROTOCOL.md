@@ -91,3 +91,14 @@ Android 0.2.4 的 start_sleep_task / extract_current_sleep 可选参数 `date_co
 `BAD_PROTOCOL/BAD_REQUEST/BAD_ID/BAD_DATE/BAD_TIMEOUT` 参数错误；`NOT_LAN` 非局域网；`QUEUE_FULL/SESSION_LIMIT` 达到限制；`TIMEOUT` 已过期；`STALE_SESSION/STALE_SNAPSHOT/STALE_NODE` 必须重新读取和发起；`LOCKED/OUT_OF_SCOPE/MULTI_WINDOW/OVERLAY/USER_REQUIRED` 用户处理；`ACCESSIBILITY_REQUIRED` 未授权；`SCREENSHOT_NOT_AUTHORIZED/GESTURE_NOT_AUTHORIZED` 未允许本次能力；`SCREENSHOT_FAILED/SCREENSHOT_LIMIT` 系统截图错误；`ICON_NOT_FOUND/UNADAPTED_PAGE/AMBIGUOUS_TARGET` 需要真机适配；`ACTION_FAILED` 动作未接受。
 
 没有获取私有数据库、私有文件或健康同步状态的协议。status 的包名用于安全诊断，越界应用的界面内容不返回。重连与任务恢复分开：手机主动重连，电脑必须发送新的任务编号；用户处理暂停页面后重新提取，不自动续跑旧点击。接口可由后续电脑 MCP server 包装，本次没有 ChatGPT 账户接入或 MCP 部署。
+# 局域网更新扩展（1.0.4）
+
+控制消息协议 v1 不变。Windows 桌面可在既有配对 TLS 端口提供独立 HTTPS 更新路由，不通过控制指令队列传递 APK。命令行桥没有更新缓存界面；原有控制仍兼容。
+
+- GET `/evara-update/challenge` 返回 `{"protocol":1,"nonce":"64位小写十六进制"}`。挑战绑定来源 IP、30 秒有效、只可用一次；最多 32 个，单来源最多 8 个。仅 RFC1918 IPv4 可访问。
+- 随后 GET `/evara-update/manifest`，附 `X-Evara-Nonce` 与 `X-Evara-Proof`。Proof 是 HMAC-SHA256(配对 token, UTF-8 字符串 `evara-update-v1:<nonce>:<完整请求路径>`)，小写十六进制。凭证不在 URL 中传输。
+- 认证通过返回原样的发布者签名清单，最多 64 KiB；头 `X-Evara-Cache-Id` 为本次已校验缓存的 32 位随机标识。手机使用内置公钥验证，不因信任电脑而跳过发布签名。
+- GET `/evara-update/chunk/<cache-id>/<offset>`，每次使用新挑战及对应路径 HMAC。offset 是非负十进制、1 MiB 的整数倍、小于文件大小。返回最多 1 MiB 原始二进制，末块可较短，包含同缓存标识。手机串行拼接，在完成后核验整个 SHA-256/大小及 APK 包名/版本/签名。
+- 仅共享固定已校验缓存文件，不接受任意路径。最多两个并行块读取。响应明确 `Connection: close`、`Content-Length`、`Cache-Control: no-store`，不要求 HTTP 长连接。
+- 401 鉴权失败、403 非局域网、404 未知路径、409 缓存未准备/已改变/偏移无效、429 繁忙。停止服务释放端口，删除配对关闭连接并撤销旧凭证，清除缓存使旧编号失效。
+- 手机继续验证已绑定证书的信任链、有效期、IP SAN 与固定证书；禁止重定向、不使用外网代理、每请求 30 秒预算、15 秒读取超时、全程 30 分钟上限，可取消、不自动重试。更新通道不需要控制会话授权，也不读取健康数据。

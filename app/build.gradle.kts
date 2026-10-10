@@ -3,7 +3,7 @@ android {
     namespace = "cn.personal.phonebridge"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
-    defaultConfig { applicationId = "cn.personal.phonebridge"; minSdk = 30; targetSdk = 35; versionCode = 26; versionName = "1.0.3"; testInstrumentationRunner = "cn.personal.phonebridge.UpgradeProbe" }
+    defaultConfig { applicationId = "cn.personal.phonebridge"; minSdk = 30; targetSdk = 35; versionCode = providers.gradleProperty("evaraCode").map { it.toInt() }.orElse(28).get(); versionName = providers.gradleProperty("evaraVersion").orElse("1.0.4").get(); testInstrumentationRunner = "cn.personal.phonebridge.UpgradeProbe" }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
     testOptions { unitTests.isReturnDefaultValues = true }
