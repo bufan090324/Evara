@@ -6,11 +6,22 @@ data class CalendarText(val path:String,val text:String,val description:String,v
 data class CalendarReportDate(val date:String,val evidence:List<String>)
 data class CalendarControl(val path:String,val id:String,val description:String,val type:String,val enabled:Boolean,val clickable:Boolean)
 object CalendarDate {
+    // "今天" is an observed cell annotation, never a source for year or day.
+    // Keep the original description unchanged in returned evidence.
+    private val cell=Regex("^(\\d{1,2})月(\\d{1,2})日(?:\\s+今天)?$")
+    private fun monthDay(text:String):Pair<Int,Int>?=cell.matchEntire(text.trim())?.let {
+        it.groupValues[1].toInt() to it.groupValues[2].toInt()
+    }
     fun closePath(nodes:List<CalendarControl>):String?=nodes.filter {
-        it.id=="com.huawei.health:id/sheet_indicate_container" && it.description.trim()=="关闭" && it.type=="android.widget.Button" && it.enabled && it.clickable
+        it.enabled && it.clickable && (
+            (it.id=="com.huawei.health:id/sheet_indicate_container" && it.description.trim()=="关闭" && it.type=="android.widget.Button") ||
+            // Observed on Health 15.0.8.371-wearBeta: the calendar handle itself
+            // is clickable but exposes neither class nor description.
+            (it.id=="com.huawei.health:id/sheet_indicate" && it.description.isBlank() && it.type.isBlank())
+        )
     }.singleOrNull()?.path
     fun selectedHeading(nodes:List<CalendarText>):String?=nodes.filter {it.selected}.flatMap {listOf(it.text,it.description)}
-        .map {it.trim()}.filter {it.matches(Regex("\\d{1,2}月\\d{1,2}日"))}.distinct().singleOrNull()
+        .mapNotNull {monthDay(it)}.distinct().singleOrNull()?.let {"${it.first}月${it.second}日"}
     fun sameHeading(first:String,second:String):Boolean {
         fun normalized(s:String)=s.trim().replace(Regex("\\s*(?:周[一二三四五六日天]|星期[一二三四五六日天])$"),"")
         return normalized(first)==normalized(second)
@@ -27,6 +38,11 @@ object CalendarDate {
         val md=Regex("^(\\d{1,2})月(\\d{1,2})日(?:\\s*(?:周[一二三四五六日天]|星期[一二三四五六日天]))?$").matchEntire(reportHeading.trim()) ?: return null
         val expectedMonth=md.groupValues[1].toInt();val expectedDay=md.groupValues[2].toInt()
         val selected=nodes.filter {it.selected}
+        val selectedMonthDays=selected.flatMap {n -> listOf(n.text,n.description).mapNotNull {monthDay(it)}}.distinct()
+        if(selectedMonthDays.size>1 || selectedMonthDays.any {it!=expectedMonth to expectedDay})return null
+        if(selected.count {n -> listOf(n.text,n.description).any {monthDay(it)!=null}}>1)return null
+        val selectedNumbers=selected.mapNotNull {it.text.trim().toIntOrNull()}
+        if(selectedNumbers.size>1 || selectedNumbers.any {it!=expectedDay})return null
         val explicit=selected.flatMap {n -> listOf(n.text,n.description).mapNotNull {s -> full.find(s)?.let {m->date(m.groupValues[1],m.groupValues[2],m.groupValues[3])}?.let {it to n}}}.distinctBy {it.first}
         if(explicit.size>1)return null
         if(explicit.size==1) {
@@ -36,10 +52,9 @@ object CalendarDate {
         }
         // Associate a selected day with its visible month section using current
         // node bounds. Never use a fixed screen coordinate or the first year.
-        val cell=Regex("^(\\d{1,2})月(\\d{1,2})日$")
         val days=nodes.filter {n -> n.top>=0 && n.bottom>n.top &&
             ((n.selected && n.text.trim().toIntOrNull()==expectedDay) || listOf(n.text,n.description).any {s ->
-                cell.matchEntire(s.trim())?.let {it.groupValues[1].toInt()==expectedMonth && it.groupValues[2].toInt()==expectedDay}==true
+                monthDay(s)==expectedMonth to expectedDay
             })}
         if(days.count {it.selected && it.text.trim().toIntOrNull()==expectedDay}>1)return null
         val headers=nodes.mapNotNull {n -> listOf(n.text,n.description).firstNotNullOfOrNull {s->month.matchEntire(s.trim())}?.let {Triple(n,it.groupValues[1],it.groupValues[2])}}

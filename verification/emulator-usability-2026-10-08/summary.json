@@ -1,0 +1,151 @@
+{
+  "tested_at": "2026-10-08",
+  "environment": "Android Emulator API 30 Google APIs x86_64, ARM translation",
+  "apk_initial": "1.0.2",
+  "apk_final": "1.0.3-test (22)",
+  "health": "15.0.8.371-wearBeta",
+  "hms": "6.16.2.300",
+  "jvm_tests": 159,
+  "checks": {
+    "status-initial": {
+      "ok": true,
+      "error_code": null,
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    },
+    "desktop-tree-stable": {
+      "ok": true,
+      "error_code": null,
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    },
+    "desktop-shot-stable": {
+      "ok": true,
+      "error_code": null,
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    },
+    "stale-node": {
+      "ok": false,
+      "error_code": "STALE_SNAPSHOT",
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    },
+    "cancel-immediate": {
+      "ok": true,
+      "error_code": null,
+      "task_state": "cancelled",
+      "report_success": null,
+      "date_state": null
+    },
+    "cancel-after-delay": {
+      "ok": true,
+      "error_code": null,
+      "task_state": "cancelled",
+      "report_success": null,
+      "date_state": null
+    },
+    "wrong-date-poll-03": {
+      "ok": true,
+      "error_code": null,
+      "task_state": "needs_user",
+      "report_success": false,
+      "date_state": "mismatch"
+    },
+    "bad-date": {
+      "ok": false,
+      "error_code": "BAD_DATE",
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    },
+    "fixed2-poll-02": {
+      "ok": true,
+      "error_code": null,
+      "task_state": "needs_user",
+      "report_success": null,
+      "date_state": null
+    },
+    "yesterday-poll-03": {
+      "ok": true,
+      "error_code": null,
+      "task_state": "needs_user",
+      "report_success": false,
+      "date_state": "uncertain"
+    },
+    "scroll-forward": {
+      "ok": true,
+      "error_code": null,
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    },
+    "scroll-backward": {
+      "ok": false,
+      "error_code": "STALE_SNAPSHOT",
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    },
+    "out-of-scope": {
+      "ok": false,
+      "error_code": "OUT_OF_SCOPE",
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    },
+    "revoked-shot": {
+      "ok": false,
+      "error_code": "SCREENSHOT_NOT_AUTHORIZED",
+      "task_state": null,
+      "report_success": null,
+      "date_state": null
+    }
+  },
+  "historical_field_states": {
+    "total": {
+      "state": "observed",
+      "source": "accessibility"
+    },
+    "night": {
+      "state": "observed",
+      "source": "accessibility"
+    },
+    "naps": {
+      "state": "observed",
+      "source": "accessibility"
+    },
+    "deep": {
+      "state": "observed",
+      "source": "accessibility"
+    },
+    "light": {
+      "state": "observed",
+      "source": "accessibility"
+    },
+    "rem": {
+      "state": "missing",
+      "source": "accessibility"
+    },
+    "awake": {
+      "state": "missing",
+      "source": "ocr"
+    },
+    "score": {
+      "state": "observed",
+      "source": "accessibility"
+    },
+    "bedtime": {
+      "state": "observed",
+      "source": "ocr"
+    },
+    "wake_time": {
+      "state": "observed",
+      "source": "ocr"
+    }
+  }
+}

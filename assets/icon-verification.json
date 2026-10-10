@@ -1,0 +1,19 @@
+{
+  "method": "deterministic alpha-only mask; no generative edit",
+  "original_sha256": "0128d3355b89db7d66534c47912a9c38caf72af9b5abfe790f90db0efb50d683",
+  "master_sha256": "91cd515cbfb0bf863af2fc558436b962a34c909def76f7c609fbbe4b578e86dc",
+  "original_size": [
+    1254,
+    1254
+  ],
+  "master_size": [
+    1254,
+    1254
+  ],
+  "rgb_changed_pixels": 0,
+  "fully_opaque_pixels": 1053289,
+  "edge_trim_source_pixels": 4,
+  "edge_feather_source_pixels": 1,
+  "transparent_corners": true,
+  "note": "Deployment sizes are resampled; the master retains original RGB and resolution."
+}

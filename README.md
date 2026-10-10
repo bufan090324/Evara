@@ -1,8 +1,8 @@
-# Evara 1.0.2
+# Evara 1.0.3
 
 个人使用的 Android 11+ 与 Windows x64 局域网客户端，针对华为运动健康中文版的单日报告。Android 不包含模型密钥；可选 AI 服务由 Windows 调用。
 
-[下载安装包](https://github.com/bufan090324/Evara/releases/latest) · [当前能力清单](FEATURES.md) · [通信协议](PROTOCOL.md) · [AI 操作](AI_GUIDE.md) · [更新与发布](UPDATES.md) · [验证记录](TEST_RESULTS_1.0.2.md)
+[下载安装包](https://github.com/bufan090324/Evara/releases/latest) · [当前能力清单](FEATURES.md) · [通信协议](PROTOCOL.md) · [AI 操作](AI_GUIDE.md) · [更新与发布](UPDATES.md) · [验证记录](TEST_RESULTS_1.0.3.md)
 
 ## 开始使用
 
