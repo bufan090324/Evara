@@ -135,9 +135,9 @@ class SleepTask(private val app:BridgeApp) {
             else {
                 update(g,"按需截图，本地识别入睡、醒来及明确清醒时长")
                 try {
-                    val shot=a.screenshot(95)
-                    val captured=a.check(shot.getString("snapshot_id"))
-                    requireBridge(captured.pkg==s.pkg && captured.nodes.map {listOf(it.path,it.text,it.description,it.bounds.toShortString(),it.selected)}==s.nodes.map {listOf(it.path,it.text,it.description,it.bounds.toShortString(),it.selected)},"STALE_SNAPSHOT","截图前页面已变化，请重新读取")
+                    val captured=a.verifyOcrPage(s)
+                    val shot=a.screenshot(95,captured)
+                    a.verifyOcrPage(captured)
                     var firstLines:List<OcrLine>?=null
                     val lines=withTimeoutOrNull(8000) {
                         val first=LocalOcr.recognize(shot)
@@ -147,7 +147,7 @@ class SleepTask(private val app:BridgeApp) {
                         if(initialReading.fields["wake_time"]?.state=="missing" && focus!=null) {
                             update(g,"放大醒来文字区域，重新识别完整数字")
                             app.checkOperation();requireBridge(app.screenshotAllowed,"SCREENSHOT_NOT_AUTHORIZED","截图授权已撤销")
-                            a.check(shot.getString("snapshot_id"))
+                            a.verifyOcrPage(captured)
                             try {first+LocalOcr.recognize(shot,focus)}catch(e:BridgeError) {
                                 if(e.code !in setOf("OCR_FAILED","OCR_BUSY"))throw e
                                 first+focus.copy(text="醒来局部OCR失败：${e.code}，原文=${focus.text}",pass="focused_error")
@@ -156,7 +156,7 @@ class SleepTask(private val app:BridgeApp) {
                     }
                     update(g,"核对 OCR 页面与本次授权")
                     app.checkOperation();requireBridge(app.screenshotAllowed,"SCREENSHOT_NOT_AUTHORIZED","本次截图授权已撤销")
-                    a.check(shot.getString("snapshot_id"))
+                    a.verifyOcrPage(captured)
                     val usable=lines ?: firstLines
                     report=if(usable==null)SleepOcr.unavailable(report,"本地 OCR 超过 8 秒，图表字段未读取；不会自动重试")
                         else SleepOcr.supplement(report,usable,shot.getString("snapshot_id"),shot.getJSONArray("region").getInt(0),shot.getJSONArray("region").getInt(1))

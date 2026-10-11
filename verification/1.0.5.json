@@ -1,0 +1,12 @@
+{
+  "version": "1.0.5",
+  "android_version_code": 29,
+  "android_jvm_tests": 174,
+  "windows_tests": 104,
+  "new_ocr_guard_tests": 6,
+  "lint_errors": 0,
+  "lint_warnings": 42,
+  "real_phone_ocr_fix_verified": false,
+  "emulator_ocr_fix_verified": false,
+  "action_snapshot_protection_unchanged": true
+}

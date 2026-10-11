@@ -156,9 +156,17 @@ class BridgeAccessibility : AccessibilityService() {
         val accepted=dispatchGesture(g,object:GestureResultCallback(){override fun onCompleted(gestureDescription:GestureDescription?) {if(c.isActive)c.resume(Unit)};override fun onCancelled(gestureDescription:GestureDescription?) {if(c.isActive)c.resumeWithException(BridgeError("GESTURE_CANCELLED","系统取消手势"))}},null)
         if(!accepted && c.isActive)c.resumeWithException(BridgeError("GESTURE_FAILED","系统未接受手势"))
     }
-    suspend fun screenshot(jpegQuality:Int=75): JSONObject {
+    internal fun verifyOcrPage(expected:UiSnapshot):UiSnapshot {
+        app.checkOperation()
+        requireBridge(app.screenshotAllowed,"SCREENSHOT_NOT_AUTHORIZED","截图授权已撤销")
+        fun state(s:UiSnapshot)=OcrPageState(s.pkg,s.window,WindowBox(s.bounds.left,s.bounds.top,s.bounds.right,s.bounds.bottom),s.nodes.map {n -> OcrPageNode(n.path,n.id,n.text,n.description,WindowBox(n.bounds.left,n.bounds.top,n.bounds.right,n.bounds.bottom),n.enabled,n.selected,n.type,n.clickable,n.scrollable)})
+        val fresh=tree() // guard() still rejects lock, overlays, login and other apps.
+        requireBridge(OcrPageGuard.matches(state(expected),state(fresh),SystemClock.elapsedRealtime()-expected.time),"STALE_SNAPSHOT","OCR 对应报告内容、日期或页面位置已改变，请重新读取")
+        return fresh
+    }
+    suspend fun screenshot(jpegQuality:Int=75,ocrExpected:UiSnapshot?=null): JSONObject {
         requireBridge(app.screenshotAllowed,"SCREENSHOT_NOT_AUTHORIZED","请在手机允许本次会话截图")
-        val s=tree();val epoch=app.gate.epoch
+        val s=if(ocrExpected==null)tree() else verifyOcrPage(ocrExpected);val epoch=app.gate.epoch
         app.checkOperation()
         return suspendCancellableCoroutine { c ->
             takeScreenshot(Display.DEFAULT_DISPLAY,mainExecutor,object:TakeScreenshotCallback {
@@ -167,7 +175,7 @@ class BridgeAccessibility : AccessibilityService() {
                     try {
                         if(!c.isActive)return
                         requireBridge(app.active && app.screenshotAllowed && app.gate.epoch==epoch,"STALE_SESSION","会话已结束")
-                        check(s.id)
+                        if(ocrExpected==null)check(s.id) else verifyOcrPage(s)
                         val hardware=Bitmap.wrapHardwareBuffer(buffer,result.colorSpace) ?: throw BridgeError("SCREENSHOT_FAILED","无法读取图像")
                         val bitmap=try { hardware.copy(Bitmap.Config.ARGB_8888,false) ?: throw BridgeError("SCREENSHOT_FAILED","无法复制图像") } finally { hardware.recycle() }
                         val b=Rect(s.bounds)

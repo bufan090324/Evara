@@ -1,6 +1,6 @@
-# Evara 1.0.4 软件更新
+# Evara 1.0.5 软件更新
 
-Windows 和 Android 均为 1.0.4，安卓 versionCode 28，保留 cn.personal.phonebridge 包名、原有 APK 签名、协议 v1 和配对/AI 设置目录。内置更新源：
+Windows 和 Android 均为 1.0.5，安卓 versionCode 29，保留 cn.personal.phonebridge 包名、原有 APK 签名、协议 v1 和配对/AI 设置目录。内置更新源：
 
 `https://github.com/bufan090324/Evara/releases/latest/download/update.json`
 
